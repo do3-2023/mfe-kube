@@ -23,5 +23,5 @@ jobs:
       - name: Build & push to GHCR
         run: |
           cd front/
-          docker build . --tag ghcr.io/do3-2023/mfe-kube:latest
-          docker push ghcr.io/do3-2023/mfe-kube:latest
+          docker build . --tag ghcr.io/do3-2023/mfe-kube-front:latest
+          docker push ghcr.io/do3-2023/mfe-kube-front:latest
