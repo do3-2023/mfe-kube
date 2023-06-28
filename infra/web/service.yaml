@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-nuxt
+  namespace: mfe-web
+spec:
+  type: NodePort
+  selector:
+    name: deployment-nuxt
+    namespace: mfe-web
+  ports:
+    - name: 3000-tcp
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: deployment-postgres
+  namespace: mfe-db
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: deployment-postgres
+        namespace: mfe-db
+    spec:
+      containers:
+        - name: name
+          image: postgres:15

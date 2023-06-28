@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-nuxt
+  namespace: mfe-web
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      name: deployment-nuxt
+      namespace: mfe-web
+  template:
+    metadata:
+      labels:
+        name: deployment-nuxt
+        namespace: mfe-web
+    spec:
+      containers:
+        - name: nuxt
+          image: ghcr.io/do3-2023/mfe-kube/web:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
