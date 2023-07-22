@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "insert into messages(\"content\") values($1) returning *;",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "content",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "created_at",
+        "type_info": "Timestamp"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "bdd8b83d9b6081815be5520b1e172b41267290b4f5ffdf3304aa4725f0bd59a9"
+}

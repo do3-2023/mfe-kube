@@ -11,14 +11,16 @@ COPY ./Cargo.* .
 RUN cargo fetch
 
 COPY ./migrations ./migrations
-COPY ./sqlx-data.json ./sqlx-data.json
+COPY ./.sqlx ./.sqlx
 COPY ./src ./src
 
 RUN cargo build --target x86_64-unknown-linux-musl --release
 
 FROM scratch
 
-COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/mfe-api /
+USER 1000
+
+COPY --from=builder --chown=1000 /app/target/x86_64-unknown-linux-musl/release/mfe-api /
 
 ENV APP_PORT=80
 EXPOSE 80
