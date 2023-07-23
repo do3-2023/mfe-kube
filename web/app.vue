@@ -1,5 +1,6 @@
 <template>
-  <div>
-    <h1>Hello world! 🎉</h1>
-  </div>
+  <main>
+    <NuxtPage />
+  </main>
+  <Footer />
 </template>
