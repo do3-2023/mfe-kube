@@ -54,9 +54,9 @@ jobs:
       matrix:
         include:
           - context: ./api
-            image: ghcr.io/${{ github.repository_owner }}/mfe-kube/api
+            image: ghcr.io/${{ github.repository }}/api
           - context: ./web
-            image: ghcr.io/${{ github.repository_owner }}/mfe-kube/web
+            image: ghcr.io/${{ github.repository }}/web
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: ${{ github.repository }}
