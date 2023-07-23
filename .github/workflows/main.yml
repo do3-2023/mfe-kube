@@ -21,6 +21,8 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         name: Use cached dependencies and artifacts
+        with:
+          workspaces: ./api
 
       - name: Check formatting
         run: cargo fmt --check
