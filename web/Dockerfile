@@ -19,11 +19,11 @@ RUN apk add dumb-init
 
 COPY --from=build /app/.output ./
 
+ENV PORT=80
 ENV HOST=0.0.0.0
-ENV PORT=3000
 ENV NODE_ENV=production
 
-EXPOSE 3000
+EXPOSE ${PORT}
 
 # start the app with dumb init to spawn the Node.js runtime process
 # with signal support

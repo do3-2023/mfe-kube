@@ -23,6 +23,6 @@ USER 1000
 COPY --from=builder --chown=1000 /app/target/x86_64-unknown-linux-musl/release/mfe-api /
 
 ENV APP_PORT=80
-EXPOSE 80
+EXPOSE ${APP_PORT}
 
 CMD ["/mfe-api"]
