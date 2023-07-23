@@ -4,6 +4,7 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Message {
     pub id: Uuid,
     pub content: String,
