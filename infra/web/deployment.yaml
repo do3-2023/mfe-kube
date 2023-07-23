@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment-nuxt
+  name: front-deployment
   namespace: mfe-web
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -12,17 +12,23 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      name: deployment-nuxt
+      name: front-deployment
       namespace: mfe-web
   template:
     metadata:
       labels:
-        name: deployment-nuxt
+        name: front-deployment
         namespace: mfe-web
     spec:
       containers:
-        - name: nuxt
+        - name: nuxtapp
           image: ghcr.io/do3-2023/mfe-kube/web:latest
           imagePullPolicy: Always
+          env:
+            - name: NUXT_PUBLIC_API_BASE
+              valueFrom:
+                configMapKeyRef:
+                  name: front-config
+                  key: apiBase
           ports:
-            - containerPort: 3000
+            - containerPort: 80

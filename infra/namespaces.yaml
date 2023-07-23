@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mfe-web
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mfe-back
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mfe-data

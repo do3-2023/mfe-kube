@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  namespace: mfe-data
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: postgres-deployment
+      namespace: mfe-data
+  template:
+    metadata:
+      labels:
+        name: postgres-deployment
+        namespace: mfe-data
+    spec:
+      containers:
+        - name: name
+          image: bitnami/postgresql:15
+          env:
+            - name: POSTGRESQL_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: data-config
+                  key: postgresUsername
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: data-secret
+                  key: postgresPassword
+            - name: POSTGRESQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: data-config
+                  key: postgresDbName
+          ports:
+            - containerPort: 5432
+      # TODO add PV & PVC
