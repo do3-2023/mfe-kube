@@ -57,3 +57,10 @@ spec:
                 - "$(POSTGRESQL_DATABASE)"
             initialDelaySeconds: 5
             periodSeconds: 10
+          volumeMounts:
+            - name: postgres-data
+              mountPath: "/bitnami/postgresql"
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
