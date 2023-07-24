@@ -30,3 +30,6 @@ services:
       POSTGRESQL_DATABASE: "api"
     ports:
       - 127.0.0.1:5432:5432
+    # alternative to using `sqlx migrate run` to populate the DB on first run
+    volumes:
+      - ./api/migrations:/docker-entrypoint-initdb.d
