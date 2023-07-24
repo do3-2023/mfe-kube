@@ -1,15 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: front-service
+  name: web-service
   namespace: mfe-web
 spec:
   type: NodePort
   selector:
-    name: front-deployment
+    name: web-deployment
     namespace: mfe-web
   ports:
-    - name: front-port
-      protocol: TCP
+    - name: web-port
       port: 80
-      targetPort: 80
+      targetPort: nuxt-pod-port

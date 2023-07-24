@@ -35,7 +35,7 @@ kubectl apply -f infra/web --wait
 6. Expose the web service to your local machine (here the port `3000`)
 
 ```sh
-kubectl port-forward -n mfe-web services/front-service 3000:front-port
+kubectl port-forward -n mfe-web services/web-service 3000:web-port
 ```
 
 Now you can access it through [localhost:3000](http://localhost:3000/)
