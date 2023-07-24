@@ -33,3 +33,15 @@ spec:
           ports:
             - name: nuxt-pod-port
               containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /api/healthz
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /api/healthz
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 3

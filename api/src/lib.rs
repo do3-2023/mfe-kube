@@ -45,14 +45,15 @@ fn create_app(pool: Pool<Postgres>) -> Router {
         )
         .layer(CorsLayer::very_permissive());
 
-    let api_routes = Router::new().route(
-        "/messages",
-        post(add_message_handler).get(get_all_messages_handler),
-    );
+    let api_routes = Router::new()
+        .route(
+            "/messages",
+            post(add_message_handler).get(get_all_messages_handler),
+        )
+        .route("/healthz", get(health_handler));
 
     Router::new()
         .nest("/api", api_routes)
-        .route("/healthz", get(health_handler))
         .layer(common_layers)
         .with_state(ApiState { pool })
 }
