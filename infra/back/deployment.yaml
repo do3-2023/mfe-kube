@@ -1,1 +1,47 @@
-# TODO add deployment, service & secret
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+  namespace: mfe-back
+spec:
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      name: api-deployment
+      namespace: mfe-back
+  template:
+    metadata:
+      labels:
+        name: api-deployment
+        namespace: mfe-back
+    spec:
+      containers:
+        - name: rust-api
+          image: ghcr.io/do3-2023/mfe-kube/api:latest
+          imagePullPolicy: Always
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-secret
+                  key: postgresUrl
+          ports:
+            - name: api-pod-port
+              containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 3
