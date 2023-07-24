@@ -29,8 +29,8 @@ async fn main() -> anyhow::Result<()> {
 
 async fn init_db(database_url: String) -> anyhow::Result<Pool<Postgres>> {
     let pool = PgPoolOptions::new()
-        .max_connections(5)
-        .acquire_timeout(Duration::from_secs(2))
+        .max_connections(10)
+        .acquire_timeout(Duration::from_secs(1))
         .connect(&database_url)
         .await
         .context("could not connect to database")?;
