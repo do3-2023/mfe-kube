@@ -6,8 +6,8 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: postgres-deployment
+    name: postgres-deployment
     namespace: mfe-data
   ports:
     - port: 5432
-      targetPort: postgres-pod-port
+      targetPort: pg-pod-port

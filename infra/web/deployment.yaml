@@ -4,7 +4,7 @@ metadata:
   name: web-deployment
   namespace: mfe-web
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
     rollingUpdate:
       maxSurge: 1

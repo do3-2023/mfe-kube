@@ -5,6 +5,11 @@ metadata:
   namespace: mfe-data
 spec:
   replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
   selector:
     matchLabels:
       name: postgres-deployment
@@ -35,16 +40,18 @@ spec:
                   name: data-config
                   key: postgresDbName
           ports:
-            - name: postgres-pod-port
+            - name: pg-pod-port
               containerPort: 5432
           livenessProbe:
             exec:
               command:
                 - "pg_isready"
                 - "-U"
-                - "$(POSTGRESQL_USERNAME)"
+                - "api"
+                - "-h"
+                - "localhost"
                 - "-d"
-                - "$(POSTGRESQL_DATABASE)"
+                - "api"
             initialDelaySeconds: 15
             periodSeconds: 20
           readinessProbe:
@@ -52,9 +59,11 @@ spec:
               command:
                 - "pg_isready"
                 - "-U"
-                - "$(POSTGRESQL_USERNAME)"
+                - "api"
+                - "-h"
+                - "localhost"
                 - "-d"
-                - "$(POSTGRESQL_DATABASE)"
+                - "api"
             initialDelaySeconds: 5
             periodSeconds: 10
           volumeMounts:

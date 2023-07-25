@@ -2,9 +2,10 @@ kind: Service
 apiVersion: v1
 metadata:
   name: api-service
+  namespace: mfe-back
 spec:
   selector:
-    app: api-deployment
+    name: api-deployment
     namespace: mfe-back
   ports:
     - name: api-port
