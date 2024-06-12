@@ -1,7 +1,5 @@
-use crate::{
-    errors::ApiError,
-    models::message::{CreateMessage, Message},
-};
+use super::ApiError;
+use crate::models::message::{CreateMessage, Message};
 use axum::{extract::State, Json};
 use axum_extra::extract::WithRejection;
 use sqlx::{Pool, Postgres};
@@ -11,9 +9,11 @@ use validator::Validate;
 pub async fn add_message_handler(
     State(pool): State<Pool<Postgres>>,
     WithRejection(Json(create_message), _): WithRejection<Json<CreateMessage>, ApiError>,
-) -> anyhow::Result<Json<Message>, ApiError> {
+) -> Result<Json<Message>, ApiError> {
     // check validation schema
-    create_message.validate()?;
+    create_message
+        .validate()
+        .map_err(ApiError::InvalidRequest)?;
 
     let inserted_message: Message = sqlx::query_as!(
         Message,
@@ -21,7 +21,8 @@ pub async fn add_message_handler(
         create_message.content
     )
     .fetch_one(&pool)
-    .await?;
+    .await
+    .map_err(ApiError::DatabaseRequest)?;
 
     info!("new message inserted: {:?}", inserted_message);
 

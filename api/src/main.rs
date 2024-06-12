@@ -1,11 +1,10 @@
-use anyhow::{Context, Ok};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use std::time::Duration;
-use tracing::Level;
+use tracing::{info, Level};
 use tracing_subscriber::{filter::Targets, prelude::*};
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> Result<(), mfe_api::StartError> {
     let _ = dotenvy::dotenv();
 
     // Tracing & logging
@@ -19,27 +18,30 @@ async fn main() -> anyhow::Result<()> {
         .with(tracing_subscriber::fmt::layer().compact())
         .init();
 
-    let app_port = std::env::var("APP_PORT").unwrap_or("80".to_string());
-    let database_url = std::env::var("DATABASE_URL").context("no DATABASE_URL given")?;
+    let host = std::env::var("APP_HOST").unwrap_or("0.0.0.0".into());
+    let port = std::env::var("APP_PORT").unwrap_or("3000".into());
+    let addr = format!("{}:{}", host, port);
+    info!("listening on http://{}/", addr);
 
-    let pool = init_db(database_url).await?;
+    let database_url = std::env::var("DATABASE_URL").expect("no DATABASE_URL given");
+    let pool = init_db(&database_url).await?;
 
-    mfe_api::run_server(app_port, pool).await
+    mfe_api::run_server(addr, pool).await
 }
 
-async fn init_db(database_url: String) -> anyhow::Result<Pool<Postgres>> {
+async fn init_db(database_url: &str) -> Result<Pool<Postgres>, mfe_api::StartError> {
     let pool = PgPoolOptions::new()
         .max_connections(10)
         .acquire_timeout(Duration::from_secs(1))
-        .connect(&database_url)
+        .connect(database_url)
         .await
-        .context("could not connect to database")?;
+        .map_err(mfe_api::StartError::CreatePostgresPool)?;
 
     // Database migrations
     sqlx::migrate!()
         .run(&pool)
         .await
-        .context("could not execute the database migrations")?;
+        .map_err(mfe_api::StartError::PostgresMigration)?;
 
     Ok(pool)
 }

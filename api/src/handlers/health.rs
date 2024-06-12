@@ -1,12 +1,15 @@
-use crate::errors::ApiError;
+use super::ApiError;
 use axum::extract::State;
 use sqlx::{postgres::any::AnyConnectionBackend, Pool, Postgres};
 
-pub async fn health_handler(
-    State(pool): State<Pool<Postgres>>,
-) -> anyhow::Result<&'static str, ApiError> {
+pub async fn health_handler<'a>(State(pool): State<Pool<Postgres>>) -> Result<&'a str, ApiError> {
     // check DB health
-    pool.acquire().await?.ping().await?;
+    pool.acquire()
+        .await
+        .map_err(ApiError::DatabaseConnection)?
+        .ping()
+        .await
+        .map_err(ApiError::DatabaseRequest)?;
 
     Ok("healthy")
 }
