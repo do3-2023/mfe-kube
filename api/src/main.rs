@@ -1,22 +1,11 @@
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use std::time::Duration;
-use tracing::{info, Level};
-use tracing_subscriber::{filter::Targets, prelude::*};
+use tracing::info;
 
 #[tokio::main]
 async fn main() -> Result<(), mfe_api::StartError> {
     let _ = dotenvy::dotenv();
-
-    // Tracing & logging
-    tracing_subscriber::registry()
-        .with(
-            Targets::new()
-                .with_target("sqlx", Level::DEBUG)
-                .with_target("tower_http", Level::TRACE)
-                .with_target("mfe_api", Level::TRACE),
-        )
-        .with(tracing_subscriber::fmt::layer().compact())
-        .init();
+    tracing_subscriber::fmt::init();
 
     let host = std::env::var("APP_HOST").unwrap_or("0.0.0.0".into());
     let port = std::env::var("APP_PORT").unwrap_or("3000".into());

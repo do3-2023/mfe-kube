@@ -21,8 +21,8 @@ services:
       DATABASE_URL: "postgresql://api:CHANGEME@db/api"
     depends_on:
       - db
-   #  ports:
-   #    - 127.0.0.1:3001:80
+    ports:
+      - 127.0.0.1:3001:80
 
   db:
     image: bitnami/postgresql:15
@@ -33,5 +33,5 @@ services:
     ports:
       - 127.0.0.1:5432:5432
     # alternative to using `sqlx migrate run` to populate the DB on first run
-    volumes:
-      - ./api/migrations:/docker-entrypoint-initdb.d
+    # volumes:
+    #   - ./api/migrations:/docker-entrypoint-initdb.d

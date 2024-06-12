@@ -3,21 +3,17 @@ mod models;
 
 use axum::{
     extract::FromRef,
-    routing::{get, post},
+    routing::{delete, get, post},
     Router,
 };
 use handlers::{
-    add_message::add_message_handler, get_all_messages::get_all_messages_handler,
-    health::health_handler,
+    add_person::add_person_handler, delete_person::delete_person_handler,
+    get_all_persons::get_all_persons_handler, health::health_handler,
 };
 use sqlx::{Pool, Postgres};
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
-use tower_http::{
-    cors::CorsLayer,
-    trace::{DefaultOnResponse, TraceLayer},
-    LatencyUnit,
-};
+use tower_http::cors::CorsLayer;
 
 #[derive(Debug, Clone, FromRef)]
 struct ApiState {
@@ -45,22 +41,16 @@ pub async fn run_server(addr: String, pool: Pool<Postgres>) -> Result<(), StartE
 }
 
 fn create_router(pool: Pool<Postgres>) -> Router {
-    let common_layers = ServiceBuilder::new()
-        .layer(
-            TraceLayer::new_for_http()
-                .on_response(DefaultOnResponse::new().latency_unit(LatencyUnit::Micros)),
-        )
-        .layer(CorsLayer::very_permissive());
+    let persons_routes = Router::new()
+        .route("/:id", delete(delete_person_handler))
+        .route("/", post(add_person_handler).get(get_all_persons_handler));
 
     let api_routes = Router::new()
-        .route(
-            "/messages",
-            post(add_message_handler).get(get_all_messages_handler),
-        )
+        .nest("/persons", persons_routes)
         .route("/healthz", get(health_handler));
 
     Router::new()
         .nest("/api", api_routes)
-        .layer(common_layers)
+        .layer(ServiceBuilder::new().layer(CorsLayer::very_permissive()))
         .with_state(ApiState { pool })
 }
