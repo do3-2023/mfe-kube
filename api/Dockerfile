@@ -1,6 +1,8 @@
-FROM rust:1-slim-bookworm as builder
+FROM rust:1-slim as builder
 
-RUN apt update && apt install -y musl-tools musl-dev
+RUN apt update && \
+    apt upgrade && \
+    apt install -y musl-tools musl-dev
 RUN rustup target add x86_64-unknown-linux-musl
 
 WORKDIR /app
