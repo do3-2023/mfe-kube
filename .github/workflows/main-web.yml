@@ -1,0 +1,42 @@
+name: WEB module workflow (check & build push docker)
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+      SQLX_OFFLINE: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install the Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Use cached dependencies and artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ./web
+
+      - name: Check formatting
+        run: cargo fmt --check
+        working-directory: ./web
+
+      - name: Run lint
+        run: cargo clippy -- -D warnings
+        working-directory: ./web
+
+  build_and_push:
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/reusable-docker.yml
+    with:
+      path: ./web
+      image: ghcr.io/${{ github.repository }}/web
