@@ -5,10 +5,8 @@ services:
       context: web/
       dockerfile: Dockerfile
     environment:
-      NODE_ENV: production # optional
-      PORT: 80 # optional
-      HOST: 0.0.0.0 # optional
-      NUXT_PUBLIC_API_BASE: "http://api/api"
+      APP_PORT: 80 # optional
+      APP_HOST: 0.0.0.0 # optional
     ports:
       - 127.0.0.1:3000:80
 

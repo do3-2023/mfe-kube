@@ -1,12 +1,6 @@
-#Outputs
-.output
-.nuxt
-.nitro
-.cache
+*.local
 dist/
 target/
-
-# Node dependencies
 node_modules/
 
 # Logs
