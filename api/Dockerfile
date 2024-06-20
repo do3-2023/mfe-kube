@@ -1,9 +1,9 @@
-FROM rust:1-slim as builder
+FROM clux/muslrust:stable as builder
 
 RUN apt update && \
-    apt upgrade && \
-    apt install -y musl-tools musl-dev
-RUN rustup target add x86_64-unknown-linux-musl
+    apt upgrade
+
+FROM builder as build
 
 WORKDIR /app
 ENV SQLX_OFFLINE=true
@@ -22,7 +22,7 @@ FROM scratch
 
 USER 1000
 
-COPY --from=builder --chown=1000 /app/target/x86_64-unknown-linux-musl/release/mfe-api /
+COPY --from=build --chown=1000 /app/target/x86_64-unknown-linux-musl/release/mfe-api /
 
 ENV APP_PORT=80
 EXPOSE ${APP_PORT}
