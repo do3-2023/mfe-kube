@@ -14,8 +14,13 @@ pub enum StartError {
     ServerNotStarting(std::io::Error),
 }
 
-pub async fn run_server(addr: String) -> Result<(), StartError> {
-    let app = create_router();
+#[derive(Debug, Clone)]
+struct Config {
+    pub worker_api_url: String,
+}
+
+pub async fn run_server(addr: String, worker_api_url: String) -> Result<(), StartError> {
+    let app = create_router(Config { worker_api_url });
 
     let listener = tokio::net::TcpListener::bind(addr)
         .await
@@ -26,10 +31,11 @@ pub async fn run_server(addr: String) -> Result<(), StartError> {
         .map_err(StartError::ServerNotStarting)
 }
 
-fn create_router() -> Router {
+fn create_router(config: Config) -> Router {
     Router::new()
         .route("/", get(handlers::pages::home))
         .route("/add-person", post(handlers::rest::add_person_handler))
+        .with_state(config)
         .nest_service("/assets", ServeDir::new("dist"))
         .layer(ServiceBuilder::new().layer(CorsLayer::very_permissive()))
 }

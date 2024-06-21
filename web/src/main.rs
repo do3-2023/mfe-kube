@@ -9,5 +9,7 @@ async fn main() -> Result<(), mfe_web::StartError>  {
     let addr = format!("{}:{}", host, port);
     info!("listening on http://{}/", addr);
 
-    mfe_web::run_server(addr).await
+    let worker_api_url = std::env::var("WORKER_API_URL").unwrap_or("localhost:3000".into());
+
+    mfe_web::run_server(addr, worker_api_url).await
 }

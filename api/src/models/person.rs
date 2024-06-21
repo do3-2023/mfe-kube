@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 #[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Person {
     pub id: i32,
     pub last_name: String,

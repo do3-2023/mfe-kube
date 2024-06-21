@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.min.js"></script>
     <script src="https://unpkg.com/htmx-ext-remove-me@2.0.0/remove-me.js"></script>
     <link href="/assets/main.css" rel="stylesheet">
     {% block head %}{% endblock %}
@@ -19,6 +19,12 @@
     {% block content %}{% endblock %}
     <script>
         htmx.logAll();
+        document.addEventListener('htmx:responseError', (customEvent) => {
+            const errorTemplate = customEvent.detail.xhr.response;
+            const temp = document.createElement('div');
+            temp.innerHTML = errorTemplate;
+            document.body.appendChild(temp.firstChild);
+        });
     </script>
 </body>
 

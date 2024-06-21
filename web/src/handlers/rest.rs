@@ -1,17 +1,16 @@
-use crate::models::Person;
 use super::WebsiteError;
+use crate::{models::Person, Config};
 use askama::Template;
-use askama_axum::IntoResponse;
-use axum::{debug_handler, Form};
+use axum::{extract::State, Form};
 use axum_extra::extract::WithRejection;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use tracing::info;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct AddPerson {
     pub last_name: String,
     pub phone_number: String,
-    pub locatiodn: String,
+    pub location: String,
 }
 
 #[derive(Debug, Clone, Template)]
@@ -20,21 +19,24 @@ pub struct PersonTemplate {
     pub person: Person,
 }
 
-#[debug_handler]
 pub async fn add_person_handler(
+    State(config): State<Config>,
     WithRejection(Form(add_person), _): WithRejection<Form<AddPerson>, WebsiteError>,
-) -> impl IntoResponse {
+) -> Result<PersonTemplate, WebsiteError> {
     info!("new person received: {:?}", add_person);
 
-    // TODO call the backend api
-    let new_person = Person {
-        _id: Some(0),
-        last_name: add_person.last_name,
-        phone_number: add_person.phone_number,
-        location: add_person.locatiodn,
-    };
+    let client = reqwest::Client::new();
+    let response = client
+        .post(format!("http://{}/api/persons", config.worker_api_url))
+        .json(&add_person)
+        .send()
+        .await
+        .map_err(WebsiteError::AddPersonReqwest)?;
 
-    PersonTemplate {
-        person: new_person,
-    }
+    let new_person = response
+        .json::<Person>()
+        .await
+        .map_err(WebsiteError::CreatePersonJsonDeserialization)?;
+
+    Ok(PersonTemplate { person: new_person })
 }

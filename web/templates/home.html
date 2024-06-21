@@ -3,7 +3,7 @@
 {% block title %}Persons - MFE Monitoring DO4{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto p-6 space-y-8">
+<div class="max-w-6xl mx-auto p-6 space-y-8">
     <h1 class="text-3xl font-bold">👥 Persons - MFE Monitoring</h1>
     <section>
         <h2 class="text-2xl font-bold mb-4">Create a new Person</h2>
@@ -12,10 +12,17 @@
     </section>
     <section>
         <h2 class="text-2xl font-bold mb-4">Persons</h2>
+        {% if let Some(e) = error_message %}
+            <div class="inline-block rounded-lg border bg-secondary text-secondary-foreground shadow-sm py-4 px-6">
+                <span class="font-semibold first-letter:capitalize text-center">{{ e }}</span>
+            </div>
+        {% endif %}
         <div id="persons-card-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {% for person in persons %}
-                {% include "components/card.html" %}
-            {% endfor %}
+            {% if let Some(persons) = persons %}
+                {% for person in persons %}
+                    {% include "components/card.html" %}
+                {% endfor %}
+            {% endif %}
         </div>
     </section>
 </div>

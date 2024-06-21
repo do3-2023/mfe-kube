@@ -1,4 +1,5 @@
 <div class="fixed bottom-2 right-2 rounded-lg border bg-destructive text-destructive-foreground shadow-md py-4 px-6 min-w-40"
     hx-ext="remove-me" remove-me="4s">
-    <p class="font-semibold capitalize text-center">{{ message }}</p>
+    {% include "icons/error-badge.html" %}
+    <span class="font-medium text-sm ml-1">{{ message }}</span>
 </div>
