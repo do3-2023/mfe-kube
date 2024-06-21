@@ -1,4 +1,4 @@
-<form id="create-person-form" class="space-y-4" hx-post="/add-person" hx-target="#persons-card-list" hx-swap="beforeend"
+<form id="create-person-form" class="space-y-4" hx-post="/api/persons" hx-target="#persons-card-list" hx-swap="beforeend"
     hx-on::after-request="this.reset()">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="space-y-2">

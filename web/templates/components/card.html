@@ -1,4 +1,4 @@
-<div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+<div id="person-{{ person.id }}-card" class="rounded-lg border bg-card text-card-foreground shadow-sm">
     <div class="p-6 space-y-2">
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-7">
@@ -17,10 +17,10 @@
                     </div>
                 </div>
             </div>
-            <button title="Delete"
+            <button title="Delete" hx-delete="/api/persons/{{ person.id }}" hx-target="#person-{{ person.id }}-card" hx-swap="outerHTML"
                 class="h-10 w-10 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-destructive hover:text-destructive-foreground">
                 {% include "icons/trash.html" %}
-                <span class="sr-only">Delete</span>
+                <span class="sr-only">Delete {{ person.last_name }}</span>
             </button>
         </div>
     </div>

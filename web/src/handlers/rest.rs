@@ -1,7 +1,10 @@
 use super::WebsiteError;
 use crate::{models::Person, Config};
 use askama::Template;
-use axum::{extract::State, Form};
+use axum::{
+    extract::{Path, State},
+    Form,
+};
 use axum_extra::extract::WithRejection;
 use serde::{Deserialize, Serialize};
 use tracing::info;
@@ -39,4 +42,25 @@ pub async fn add_person_handler(
         .map_err(WebsiteError::CreatePersonJsonDeserialization)?;
 
     Ok(PersonTemplate { person: new_person })
+}
+
+pub async fn delete_person_handler(
+    State(config): State<Config>,
+    WithRejection(Path(person_id), _): WithRejection<Path<i32>, WebsiteError>,
+) -> Result<(), WebsiteError> {
+    let client = reqwest::Client::new();
+    let response = client
+        .delete(format!(
+            "http://{}/api/persons/{}",
+            config.worker_api_url, person_id
+        ))
+        .send()
+        .await
+        .map_err(WebsiteError::DeletePersonReqwest)?;
+    
+    if response.status().is_success() {
+        return Ok(());
+    }
+
+    Err(WebsiteError::CouldNotDeletePerson(response))
 }
