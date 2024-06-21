@@ -1,0 +1,27 @@
+<div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+    <div class="p-6 space-y-2">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-7">
+                <span class="relative flex shrink-0 overflow-hidden rounded-full text-3xl">
+                    🪨
+                </span>
+                <div>
+                    <div class="text-lg font-bold">{{ person.last_name }}</div>
+                    <div>
+                        <span class="font-medium">Phone:</span>
+                        <span class="text-muted-foreground">{{ person.phone_number }}</span>
+                    </div>
+                    <div>
+                        <span class="font-medium">Location:</span>
+                        <span class="text-muted-foreground">{{ person.location }}</span>
+                    </div>
+                </div>
+            </div>
+            <button title="Delete"
+                class="h-10 w-10 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-destructive hover:text-destructive-foreground">
+                {% include "icons/trash.html" %}
+                <span class="sr-only">Delete</span>
+            </button>
+        </div>
+    </div>
+</div>

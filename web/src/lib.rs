@@ -1,10 +1,12 @@
-use axum::{routing::get, Router};
+use axum::{
+    routing::{get, post},
+    Router,
+};
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, services::ServeDir};
 
-pub mod handlers {
-    pub mod pages;
-}
+mod handlers;
+mod models;
 
 #[derive(Debug)]
 pub enum StartError {
@@ -27,6 +29,7 @@ pub async fn run_server(addr: String) -> Result<(), StartError> {
 fn create_router() -> Router {
     Router::new()
         .route("/", get(handlers::pages::home))
+        .route("/add-person", post(handlers::rest::add_person_handler))
         .nest_service("/assets", ServeDir::new("dist"))
         .layer(ServiceBuilder::new().layer(CorsLayer::very_permissive()))
 }

@@ -3,5 +3,20 @@
 {% block title %}Persons - MFE Monitoring DO4{% endblock %}
 
 {% block content %}
-<p class="font-extrabold">Hello world!</p>
+<div class="max-w-4xl mx-auto p-6 space-y-8">
+    <h1 class="text-3xl font-bold">👥 Persons - MFE Monitoring</h1>
+    <section>
+        <h2 class="text-2xl font-bold mb-4">Create a new Person</h2>
+        <p class="text-muted-foreground mb-4">Fill out the form to add a new person to the list.</p>
+        {% include "components/create-person.html" %}
+    </section>
+    <section>
+        <h2 class="text-2xl font-bold mb-4">Persons</h2>
+        <div id="persons-card-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {% for person in persons %}
+                {% include "components/card.html" %}
+            {% endfor %}
+        </div>
+    </section>
+</div>
 {% endblock %}

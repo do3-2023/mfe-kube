@@ -1,0 +1,30 @@
+<form id="create-person-form" class="space-y-4" hx-post="/add-person" hx-target="#persons-card-list" hx-swap="beforeend"
+    hx-on::after-request="this.reset()">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="space-y-2">
+            <label for="last_name" class="text-sm font-medium leading-none">
+                Name
+            </label>
+            <input id="last_name" required type="text" name="last_name"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground" />
+        </div>
+        <div class="space-y-2">
+            <label for="phone_number" class="text-sm font-medium leading-none">
+                Phone
+            </label>
+            <input id="phone_number" required type="tel" name="phone_number"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground" />
+        </div>
+        <div class="space-y-2">
+            <label for="location" class="text-sm font-medium leading-none">
+                Location
+            </label>
+            <input id="location" required type="text" name="location"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground" />
+        </div>
+    </div>
+    <button type="submit"
+        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full sm:w-auto">
+        Create Person
+    </button>
+</form>
