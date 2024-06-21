@@ -7,7 +7,7 @@ use axum::{
 };
 use axum_extra::extract::WithRejection;
 use serde::{Deserialize, Serialize};
-use tracing::info;
+use tracing::{error, info};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct AddPerson {
@@ -57,10 +57,25 @@ pub async fn delete_person_handler(
         .send()
         .await
         .map_err(WebsiteError::DeletePersonReqwest)?;
-    
+
     if response.status().is_success() {
         return Ok(());
     }
 
     Err(WebsiteError::CouldNotDeletePerson(response))
+}
+
+pub async fn health_handler(State(config): State<Config>) -> Result<String, String> {
+    let response = reqwest::get(format!("http://{}/api/healthz", config.worker_api_url))
+        .await
+        .map_err(|e| {
+            error!("could not get health of worker api: {:?}", e);
+            String::from("not healthy :'(")
+        })?;
+
+    if response.status().is_success() {
+        return Ok("healthy <3".into());
+    }
+
+    Err(String::from("not healthy :'("))
 }
