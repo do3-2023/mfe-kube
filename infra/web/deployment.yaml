@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: rust-web-pod
-          image: ghcr.io/do3-2023/mfe-monitoring/web:1.0.0
+          image: ghcr.io/do3-2023/mfe-monitoring/web:2.0.0
           imagePullPolicy: Always
           env:
             - name: WORKER_API_URL
