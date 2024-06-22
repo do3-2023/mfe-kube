@@ -11,4 +11,4 @@ spec:
   ports:
     - name: web-port
       port: 80
-      targetPort: nuxt-pod-port
+      targetPort: web-pod-port

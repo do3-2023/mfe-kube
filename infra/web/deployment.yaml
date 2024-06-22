@@ -21,27 +21,27 @@ spec:
         namespace: mfe-web
     spec:
       containers:
-        - name: nuxt-app
-          image: ghcr.io/do3-2023/mfe-kube/web:latest
+        - name: rust-web-pod
+          image: ghcr.io/do3-2023/mfe-monitoring/web:1.0.0
           imagePullPolicy: Always
           env:
-            - name: NUXT_PUBLIC_API_BASE
+            - name: WORKER_API_URL
               valueFrom:
                 configMapKeyRef:
                   name: web-config
                   key: apiBase
           ports:
-            - name: nuxt-pod-port
+            - name: web-pod-port
               containerPort: 80
           livenessProbe:
             httpGet:
-              path: /api/healthz
+              path: /healthz
               port: 80
             initialDelaySeconds: 3
             periodSeconds: 3
           readinessProbe:
             httpGet:
-              path: /api/healthz
+              path: /healthz
               port: 80
             initialDelaySeconds: 3
             periodSeconds: 3

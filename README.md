@@ -7,6 +7,7 @@ This project contains a simple application to be deployed on kubernetes as part 
 - [MFE - Kubernetes exercise](#mfe---kubernetes-exercise)
   - [Table of contents](#table-of-contents)
   - [Repo structure](#repo-structure)
+  - [How to deploy](#how-to-deploy)
   - [How to dev](#how-to-dev)
   - [License](#license)
 
@@ -19,6 +20,24 @@ There are 5 versions branches to explore:
 - [`v3`](https://github.com/do3-2023/mfe-monitoring/tree/v3) -> migrations: no change to DB schema | api: no write, no read on `location`
 - [`v4`](https://github.com/do3-2023/mfe-monitoring/tree/v4) -> migrations: delete column `location`
 - [`wasm`](https://github.com/do3-2023/mfe-monitoring/tree/wasm)  -> to test deploying a service using WASI
+
+## How to deploy
+
+**Prerequisites:** a k8s instance, you can easily create one with kind/k3d/...
+
+1. Deploy with:
+
+```sh
+make kube-deploy # or use the commands in the Makefile
+```
+
+1. Once the pods are all running, you can portforward the web service to access it:
+
+```sh
+make kube-portforward
+```
+
+**Note:** To stop the app, you can run `make kube-delete`.
 
 ## How to dev
 
