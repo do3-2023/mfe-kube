@@ -33,6 +33,7 @@ jobs:
         working-directory: ./api
 
   build_and_push:
+    needs: checks
     permissions:
       contents: read
       packages: write

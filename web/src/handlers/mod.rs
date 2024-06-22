@@ -37,20 +37,32 @@ impl IntoResponse for WebsiteError {
             WebsiteError::CreatePersonJsonDeserialization(e) => {
                 error!("CreatePersonJsonDeserialization: {:?}", e);
                 let status = StatusCode::INTERNAL_SERVER_ERROR;
-                (status, "Could not deserialize the new person due to an internal error.")
+                (
+                    status,
+                    "Could not deserialize the new person due to an internal error.",
+                )
             }
             WebsiteError::DeletePersonPathRejection(e) => {
                 error!("DeletePersonPathRejection: {:?}", e);
-                (StatusCode::BAD_REQUEST, "Could not delete the person with the provided id.")
+                (
+                    StatusCode::BAD_REQUEST,
+                    "Could not delete the person with the provided id.",
+                )
             }
             WebsiteError::DeletePersonReqwest(e) => {
                 error!("DeletePersonReqwest: {:?}", e);
-                (StatusCode::INTERNAL_SERVER_ERROR, "Could not delete the person due to an internal error.")
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "Could not delete the person due to an internal error.",
+                )
             }
             WebsiteError::CouldNotDeletePerson(e) => {
                 error!("CouldNotDeletePerson: {:?}", e);
-                (StatusCode::BAD_REQUEST, "Could not delete the person, invalid request.")
-            },
+                (
+                    StatusCode::BAD_REQUEST,
+                    "Could not delete the person, invalid request.",
+                )
+            }
         };
 
         let template = ErrorTemplate {
