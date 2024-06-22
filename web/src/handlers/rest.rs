@@ -13,7 +13,6 @@ use tracing::{error, info};
 pub struct AddPerson {
     pub last_name: String,
     pub phone_number: String,
-    pub location: String,
 }
 
 #[derive(Debug, Clone, Template)]
