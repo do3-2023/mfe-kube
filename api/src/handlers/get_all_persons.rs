@@ -11,7 +11,7 @@ pub async fn get_all_persons_handler(
     let persons = sqlx::query_as!(
         Person,
         r#"
-SELECT id, last_name, phone_number, location
+SELECT id, last_name, phone_number
 FROM person;
         "#
     )

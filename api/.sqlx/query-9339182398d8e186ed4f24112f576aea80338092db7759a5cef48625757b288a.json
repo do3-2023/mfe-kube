@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\nINSERT INTO person(\"last_name\", \"phone_number\", \"location\")\nVALUES($1, $2, $3)\nRETURNING *;\n        ",
+  "query": "\nSELECT id, last_name, phone_number\nFROM person;\n        ",
   "describe": {
     "columns": [
       {
@@ -17,26 +17,16 @@
         "ordinal": 2,
         "name": "phone_number",
         "type_info": "Text"
-      },
-      {
-        "ordinal": 3,
-        "name": "location",
-        "type_info": "Text"
       }
     ],
     "parameters": {
-      "Left": [
-        "Text",
-        "Text",
-        "Text"
-      ]
+      "Left": []
     },
     "nullable": [
-      false,
       false,
       false,
       false
     ]
   },
-  "hash": "30720a322dfb9d2c562251cc832f531bb846a9d39e06a75cd1d120b1a94da96a"
+  "hash": "9339182398d8e186ed4f24112f576aea80338092db7759a5cef48625757b288a"
 }

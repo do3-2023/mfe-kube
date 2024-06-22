@@ -19,7 +19,7 @@ pub async fn add_person_handler(
         r#"
 INSERT INTO person("last_name", "phone_number", "location")
 VALUES($1, $2, $3)
-RETURNING *;
+RETURNING id, last_name, phone_number;
         "#,
         create_person.last_name,
         create_person.phone_number,

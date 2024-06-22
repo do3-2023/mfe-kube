@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\nDELETE FROM person p\nWHERE p.id = $1\nRETURNING *;\n        ",
+  "query": "\nDELETE FROM person p\nWHERE p.id = $1\nRETURNING id, last_name, phone_number;\n        ",
   "describe": {
     "columns": [
       {
@@ -17,11 +17,6 @@
         "ordinal": 2,
         "name": "phone_number",
         "type_info": "Text"
-      },
-      {
-        "ordinal": 3,
-        "name": "location",
-        "type_info": "Text"
       }
     ],
     "parameters": {
@@ -32,9 +27,8 @@
     "nullable": [
       false,
       false,
-      false,
       false
     ]
   },
-  "hash": "df77a898b8c31714287a0e93b7b0c736ff398b1aad60a611462171a6e9a89193"
+  "hash": "b65e90a6d34b87e383d92da2bca95d199a2dc51128e604cbeb6000014312c5ea"
 }

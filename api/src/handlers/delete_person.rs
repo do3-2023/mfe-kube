@@ -18,7 +18,7 @@ pub async fn delete_person_handler(
         r#"
 DELETE FROM person p
 WHERE p.id = $1
-RETURNING *;
+RETURNING id, last_name, phone_number;
         "#,
         id,
     )
