@@ -4,4 +4,4 @@ metadata:
   name: web-config
   namespace: mfe-web
 data:
-  apiBase: http://api-service.mfe-back/api
+  apiBase: api-service.mfe-back
