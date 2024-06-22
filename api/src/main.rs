@@ -1,9 +1,7 @@
-use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
-use std::time::Duration;
-use tracing::info;
+use tracing::{error, info};
 
 #[tokio::main]
-async fn main() -> Result<(), mfe_api::StartError> {
+async fn main() {
     let _ = dotenvy::dotenv();
     tracing_subscriber::fmt::init();
 
@@ -13,24 +11,21 @@ async fn main() -> Result<(), mfe_api::StartError> {
     info!("listening on http://{}/", addr);
 
     let database_url = std::env::var("DATABASE_URL").expect("no DATABASE_URL given");
-    let pool = init_db(&database_url).await?;
+    let client = init_db(&database_url).await.unwrap();
 
-    mfe_api::run_server(addr, pool).await
+    mfe_api::run_server(addr, client).await.unwrap();
 }
 
-async fn init_db(database_url: &str) -> Result<Pool<Postgres>, mfe_api::StartError> {
-    let pool = PgPoolOptions::new()
-        .max_connections(10)
-        .acquire_timeout(Duration::from_secs(1))
-        .connect(database_url)
+async fn init_db(database_url: &str) -> Result<tokio_postgres::Client, mfe_api::StartError> {
+    let (client, connection) = tokio_postgres::connect(database_url, tokio_postgres::NoTls)
         .await
-        .map_err(mfe_api::StartError::CreatePostgresPool)?;
+        .map_err(mfe_api::StartError::CreatePostgresConnection)?;
 
-    // Database migrations
-    sqlx::migrate!()
-        .run(&pool)
-        .await
-        .map_err(mfe_api::StartError::PostgresMigration)?;
+    tokio::spawn(async move {
+        if let Err(e) = connection.await {
+            error!("db connection error: {}", e);
+        }
+    });
 
-    Ok(pool)
+    Ok(client)
 }

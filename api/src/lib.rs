@@ -2,7 +2,6 @@ mod handlers;
 mod models;
 
 use axum::{
-    extract::FromRef,
     routing::{delete, get, post},
     Router,
 };
@@ -10,37 +9,35 @@ use handlers::{
     add_person::add_person_handler, delete_person::delete_person_handler,
     get_all_persons::get_all_persons_handler, health::health_handler,
 };
-use sqlx::{Pool, Postgres};
-use tokio::net::TcpListener;
-use tower::ServiceBuilder;
-use tower_http::cors::CorsLayer;
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
-#[derive(Debug, Clone, FromRef)]
-struct ApiState {
-    pub pool: Pool<Postgres>,
+#[derive(Debug, Clone)]
+pub struct ApiState {
+    pub postgres_client: Arc<Mutex<tokio_postgres::Client>>,
 }
 
 #[derive(Debug)]
 pub enum StartError {
-    InvalidBindAddress(std::io::Error),
-    ServerNotStarting(std::io::Error),
-    CreatePostgresPool(sqlx::Error),
-    PostgresMigration(sqlx::migrate::MigrateError),
+    InvalidBindAddressNetStd(std::io::Error),
+    InvalidBindAddressNetTokio(std::io::Error),
+    ServerNotStarting,
+    CreatePostgresConnection(tokio_postgres::Error),
 }
 
-pub async fn run_server(addr: String, pool: Pool<Postgres>) -> Result<(), StartError> {
-    let app = create_router(pool);
+pub async fn run_server(addr: String, client: tokio_postgres::Client) -> Result<(), StartError> {
+    let api_state = ApiState {
+        postgres_client: Arc::new(Mutex::new(client)),
+    };
+    let app = create_router(api_state);
 
-    let listener = TcpListener::bind(addr)
+    axum::Server::bind(&addr.parse().unwrap())
+        .serve(app.into_make_service())
         .await
-        .map_err(StartError::InvalidBindAddress)?;
-
-    axum::serve(listener, app)
-        .await
-        .map_err(StartError::ServerNotStarting)
+        .map_err(|_| StartError::ServerNotStarting)
 }
 
-fn create_router(pool: Pool<Postgres>) -> Router {
+fn create_router(state: ApiState) -> Router {
     let persons_routes = Router::new()
         .route("/:id", delete(delete_person_handler))
         .route("/", post(add_person_handler).get(get_all_persons_handler));
@@ -49,8 +46,5 @@ fn create_router(pool: Pool<Postgres>) -> Router {
         .nest("/persons", persons_routes)
         .route("/healthz", get(health_handler));
 
-    Router::new()
-        .nest("/api", api_routes)
-        .layer(ServiceBuilder::new().layer(CorsLayer::very_permissive()))
-        .with_state(ApiState { pool })
+    Router::new().nest("/api", api_routes).with_state(state)
 }

@@ -1,16 +1,14 @@
 use super::ApiError;
+use crate::ApiState;
 use axum::extract::State;
-use sqlx::{postgres::any::AnyConnectionBackend, Pool, Postgres};
 
-#[tracing::instrument]
-pub async fn health_handler<'a>(State(pool): State<Pool<Postgres>>) -> Result<&'a str, ApiError> {
+pub async fn health_handler<'a>(State(state): State<ApiState>) -> Result<&'a str, ApiError> {
     // check DB health
-    pool.acquire()
+    let pg_client = state.postgres_client.lock().await;
+    pg_client
+        .execute("SELECT 1;", &[])
         .await
-        .map_err(ApiError::DatabaseConnection)?
-        .ping()
-        .await
-        .map_err(ApiError::DatabaseRequest)?;
+        .map_err(ApiError::DatabaseConnection)?;
 
     Ok("healthy")
 }
