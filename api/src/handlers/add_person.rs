@@ -17,13 +17,12 @@ pub async fn add_person_handler(
     let inserted_person: Person = sqlx::query_as!(
         Person,
         r#"
-INSERT INTO person("last_name", "phone_number", "location")
-VALUES($1, $2, $3)
+INSERT INTO person("last_name", "phone_number")
+VALUES($1, $2)
 RETURNING id, last_name, phone_number;
         "#,
         create_person.last_name,
         create_person.phone_number,
-        create_person.location,
     )
     .fetch_one(&pool)
     .await

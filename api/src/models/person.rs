@@ -13,5 +13,4 @@ pub struct CreatePerson {
     #[validate(length(max = 2000))]
     pub last_name: String,
     pub phone_number: String,
-    pub location: String,
 }
