@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: rust-api
-          image: ghcr.io/do3-2023/mfe-monitoring/api:3.0.0
+          image: ghcr.io/do3-2023/mfe-monitoring/api:4.0.0
           imagePullPolicy: Always
           env:
             - name: DATABASE_URL
