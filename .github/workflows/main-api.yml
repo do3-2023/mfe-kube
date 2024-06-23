@@ -17,6 +17,7 @@ jobs:
       - name: Install the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
+          targets: wasm32-wasi
           components: clippy, rustfmt
 
       - name: Use cached dependencies and artifacts
@@ -32,12 +33,57 @@ jobs:
         run: cargo clippy -- -D warnings
         working-directory: ./api
 
-  build_and_push:
+  build_wasm:
     needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use cached dependencies and artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ./api
+
+      - name: Install the Rust toolchain
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: wasm32-wasi
+
+      - name: Install WasmEdge and build Wasm
+        run: |
+          curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash
+          source $HOME/.wasmedge/env
+          cd api/
+          cargo build --target wasm32-wasi --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mfe-api-wasm
+          path: ./api/target/wasm32-wasi/release/mfe-api.wasm
+          compression-level: 0
+          if-no-files-found: error
+
+  build_and_push:
+    needs: build_wasm
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    uses: ./.github/workflows/reusable-docker.yml
-    with:
-      path: ./api
-      image: ghcr.io/${{ github.repository }}/api
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Wasm artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mfe-api-wasm
+          path: ./api/target/wasm32-wasi/release
+
+      - name: See if correctly downloaded
+        run: ls ./api/target/wasm32-wasi/release
+
+      - name: Build and push Docker image
+        uses: ./.github/workflows/reusable-docker.yml
+        with:
+          path: ./api
+          image: ghcr.io/${{ github.repository }}/api
