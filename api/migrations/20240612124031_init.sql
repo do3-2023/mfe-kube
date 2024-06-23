@@ -1,3 +1,5 @@
+USE api;
+
 CREATE TABLE person(
     id serial NOT NULL PRIMARY KEY,
     last_name text NOT NULL,

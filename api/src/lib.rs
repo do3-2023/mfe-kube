@@ -9,29 +9,27 @@ use handlers::{
     add_person::add_person_handler, delete_person::delete_person_handler,
     get_all_persons::get_all_persons_handler, health::health_handler,
 };
-use std::sync::Arc;
-use tokio::sync::Mutex;
+use tokio::net::TcpListener;
 
 #[derive(Debug, Clone)]
 pub struct ApiState {
-    pub postgres_client: Arc<Mutex<tokio_postgres::Client>>,
+    pub pool: mysql::Pool,
 }
 
 #[derive(Debug)]
 pub enum StartError {
-    InvalidBindAddressNetStd(std::io::Error),
-    InvalidBindAddressNetTokio(std::io::Error),
+    InvalidBindAddress(std::io::Error),
     ServerNotStarting,
-    CreatePostgresConnection(tokio_postgres::Error),
+    CreateDbConnection(mysql::Error),
 }
 
-pub async fn run_server(addr: String, client: tokio_postgres::Client) -> Result<(), StartError> {
-    let api_state = ApiState {
-        postgres_client: Arc::new(Mutex::new(client)),
-    };
+pub async fn run_server(addr: String, pool: mysql::Pool) -> Result<(), StartError> {
+    let api_state = ApiState { pool };
     let app = create_router(api_state);
 
-    axum::Server::bind(&addr.parse().unwrap())
+    let tcp_listener = TcpListener::bind(addr).await.unwrap();
+    axum::Server::from_tcp(tcp_listener.into_std().unwrap())
+        .unwrap()
         .serve(app.into_make_service())
         .await
         .map_err(|_| StartError::ServerNotStarting)

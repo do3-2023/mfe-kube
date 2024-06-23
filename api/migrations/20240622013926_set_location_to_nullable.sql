@@ -1,3 +1,4 @@
-ALTER TABLE person
-    ALTER COLUMN location DROP NOT NULL;
+USE api;
 
+ALTER TABLE person
+    MODIFY COLUMN location text NULL;

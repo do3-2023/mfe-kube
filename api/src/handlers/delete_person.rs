@@ -1,38 +1,30 @@
 use super::ApiError;
-use crate::{models::person::Person, ApiState};
-use axum::{
-    extract::{Path, State},
-    Json,
-};
+use crate::ApiState;
+use axum::extract::{Path, State};
+use mysql::{params, prelude::Queryable};
 use tracing::info;
 
 pub async fn delete_person_handler(
     State(state): State<ApiState>,
     Path(id): Path<i32>,
-) -> Result<Json<Person>, ApiError> {
-    let row = {
-        let pg_client = state.postgres_client.lock().await;
+) -> Result<(), ApiError> {
+    {
+        let mut conn = state
+            .pool
+            .get_conn()
+            .map_err(ApiError::DatabaseConnection)?;
 
-        pg_client
-            .query_one(
-                r#"
+        conn.exec_drop(
+            r#"
 DELETE FROM person p
-WHERE p.id = $1::INTEGER
-RETURNING id, last_name, phone_number;
+WHERE p.id = :id;
             "#,
-                &[&id],
-            )
-            .await
-            .map_err(ApiError::DatabaseRequest)?
+            params! { "id" => id },
+        )
+        .map_err(ApiError::DatabaseRequest)?
     };
 
-    let deleted_person = Person {
-        id: row.get("id"),
-        last_name: row.get("last_name"),
-        phone_number: row.get("phone_number"),
-    };
+    info!("deleted person id: {:?}", id);
 
-    info!("deleted person: {:?}", deleted_person);
-
-    Ok(Json(deleted_person))
+    Ok(())
 }
